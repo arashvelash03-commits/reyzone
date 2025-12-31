@@ -1,0 +1,556 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Patient Quick Header</title>
+    <style>
+        :root {
+            --color-cream-50: rgba(252, 252, 249, 1);
+            --color-cream-100: rgba(255, 255, 253, 1);
+            --color-gray-200: rgba(245, 245, 245, 1);
+            --color-gray-300: rgba(167, 169, 169, 1);
+            --color-gray-400: rgba(119, 124, 124, 1);
+            --color-slate-500: rgba(98, 108, 113, 1);
+            --color-brown-600: rgba(94, 82, 64, 1);
+            --color-charcoal-700: rgba(31, 33, 33, 1);
+            --color-charcoal-800: rgba(38, 40, 40, 1);
+            --color-slate-900: rgba(19, 52, 59, 1);
+            --color-teal-300: rgba(50, 184, 198, 1);
+            --color-teal-500: rgba(33, 128, 141, 1);
+            --color-teal-600: rgba(29, 116, 128, 1);
+            --color-red-400: rgba(255, 84, 89, 1);
+            --color-red-500: rgba(192, 21, 47, 1);
+            --color-orange-400: rgba(230, 129, 97, 1);
+            --color-orange-500: rgba(168, 75, 47, 1);
+
+            --color-background: var(--color-cream-50);
+            --color-surface: var(--color-cream-100);
+            --color-text: var(--color-slate-900);
+            --color-text-secondary: var(--color-slate-500);
+            --color-primary: var(--color-teal-500);
+        }
+
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --color-background: var(--color-charcoal-700);
+                --color-surface: var(--color-charcoal-800);
+                --color-text: rgba(245, 245, 245, 1);
+                --color-text-secondary: rgba(167, 169, 169, 0.7);
+                --color-primary: var(--color-teal-300);
+            }
+        }
+
+        * { box-sizing: border-box; }
+        html, body { margin: 0; padding: 0; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+        body { background: var(--color-background); color: var(--color-text); padding: 8px; }
+
+        .patients-list { display: grid; gap: 6px; grid-template-columns: 1fr; }
+
+        .patient-wrapper {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 0;
+            background: var(--color-surface);
+            border: 1px solid rgba(94, 82, 64, 0.12);
+            border-radius: 8px;
+            overflow: hidden;
+        }
+
+        .header-row {
+            background: var(--color-surface);
+            border: none;
+            border-radius: 0;
+            padding: 8px;
+            display: grid;
+            grid-template-columns: 80px 1fr auto;
+            gap: 8px;
+            align-items: center;
+            transition: box-shadow 200ms;
+            cursor: pointer;
+        }
+
+        .header-row:hover {
+            box-shadow: 0 2px 8px rgba(0,0,0, 0.08);
+        }
+
+        .patient-id-badge {
+            background: rgba(33, 128, 141, 0.1);
+            color: var(--color-primary);
+            border-radius: 6px;
+            padding: 4px 6px;
+            font-size: 11px;
+            font-weight: 600;
+            text-align: center;
+            border: 1px solid rgba(33, 128, 141, 0.3);
+            line-height: 1.3;
+            min-width: 65px;
+        }
+
+        .patient-info {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 4px;
+            align-items: center;
+        }
+
+        .patient-name {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--color-text);
+            min-width: max-content;
+        }
+
+        .badge {
+            display: inline-flex;
+            align-items: center;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 10px;
+            font-weight: 500;
+            white-space: nowrap;
+            gap: 2px;
+        }
+
+        .badge-type-oncologic {
+            background: rgba(192, 21, 47, 0.12);
+            color: var(--color-red-500);
+            border: 1px solid rgba(192, 21, 47, 0.2);
+        }
+
+        .badge-type-hematologic {
+            background: rgba(230, 129, 97, 0.12);
+            color: var(--color-orange-500);
+            border: 1px solid rgba(230, 129, 97, 0.2);
+        }
+
+        .badge-primary-diagnosis {
+            background: rgba(33, 128, 141, 0.08);
+            color: var(--color-primary);
+            border: 1px solid rgba(33, 128, 141, 0.2);
+        }
+
+        .badge-stage {
+            background: rgba(94, 82, 64, 0.08);
+            color: var(--color-text);
+            border: 1px solid rgba(94, 82, 64, 0.2);
+        }
+
+        .badge-lab-alert {
+            background: rgba(255, 84, 89, 0.15);
+            color: var(--color-red-400);
+            border: 1px solid rgba(255, 84, 89, 0.3);
+            font-weight: 600;
+        }
+
+        .badge-lab-normal {
+            background: rgba(33, 128, 141, 0.08);
+            color: var(--color-primary);
+            border: 1px solid rgba(33, 128, 141, 0.15);
+            font-size: 9px;
+        }
+
+        .stage-badge {
+            background: rgba(168, 75, 47, 0.12);
+            color: var(--color-orange-500);
+            border: 1px solid rgba(168, 75, 47, 0.2);
+        }
+
+        .quick-metrics {
+            display: flex;
+            gap: 3px;
+            flex-wrap: wrap;
+            max-width: 400px;
+        }
+
+        .expand-btn {
+            background: none;
+            border: none;
+            color: var(--color-text-secondary);
+            cursor: pointer;
+            font-size: 16px;
+            padding: 2px;
+            display: flex;
+            align-items: center;
+            transition: transform 200ms;
+        }
+
+        .expand-btn.open {
+            transform: rotate(90deg);
+        }
+
+        .expanded-content {
+            display: grid;
+            grid-column: 1 / -1;
+            max-height: 0;
+            overflow: hidden;
+            padding: 0;
+            opacity: 0;
+            border-top: 1px solid rgba(94, 82, 64, 0.1);
+            background: var(--color-background);
+            transition: max-height 250ms ease, opacity 250ms ease, padding 250ms ease;
+        }
+
+        .expanded-content.show {
+            max-height: 2000px;
+            opacity: 1;
+            padding: 12px 8px;
+        }
+
+        .cards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 8px;
+            padding: 0 8px;
+        }
+
+        .data-card {
+            background: var(--color-background);
+            border: 1px solid rgba(94, 82, 64, 0.15);
+            border-radius: 6px;
+            padding: 10px;
+            transition: all 200ms;
+        }
+
+        .data-card:hover {
+            border-color: rgba(33, 128, 141, 0.3);
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+        }
+
+        .card-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--color-primary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 6px;
+            border-bottom: 1px solid rgba(33, 128, 141, 0.2);
+            padding-bottom: 4px;
+        }
+
+        .card-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+        }
+
+        .card-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: baseline;
+            font-size: 10px;
+            gap: 4px;
+        }
+
+        .card-label {
+            color: var(--color-text-secondary);
+            font-weight: 500;
+            flex-shrink: 0;
+        }
+
+        .card-value {
+            color: var(--color-text);
+            font-weight: 500;
+            word-break: break-word;
+            text-align: right;
+            flex-grow: 1;
+        }
+
+        .card-value.abnormal {
+            color: var(--color-red-500);
+            font-weight: 600;
+        }
+
+        .card-nested {
+            background: rgba(33, 128, 141, 0.05);
+            border-left: 2px solid rgba(33, 128, 141, 0.2);
+            padding: 6px 8px;
+            border-radius: 3px;
+            margin-top: 4px;
+        }
+
+        .card-nested-title {
+            font-size: 9px;
+            font-weight: 600;
+            color: var(--color-primary);
+            margin-bottom: 3px;
+        }
+
+        @media (max-width: 768px) {
+            .header-row {
+                grid-template-columns: 60px 1fr auto;
+            }
+            .quick-metrics {
+                max-width: 250px;
+            }
+            .cards-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="patients-list" id="patientsList"></div>
+
+    <script>
+        // Real patient data from database - 141 patients
+        const patients = [{patient_id:"P-001",file_number:"30031",national_code:"4970111111",disease_characteristics:{laterality:"left",primary_site:"breast",stage:{system:"AJCC 8th",t:"T2",n:"N1",m:"M0",overall_stage:"IIA"}},pathology:{histology:"invasive ductal carcinoma",grade:"2",report_date:"2024-01-15",lab:"XYZ Pathology Lab",specimen_id:"P23-1002",ihc:{ER:"positive",PR:"negative",HER2:"3+",Ki67:"25%"},molecular:{BRCA1:"negative",BRCA2:"VUS",EGFR:"wild type"}},imaging_baseline:{ct_scan:{date:"2024-01-18",findings:"left breast mass 3.1 cm, single axillary node, no distant mets"},pet_ct:{date:"2024-01-22",findings:"FDG avid breast lesion, no bone uptake"},bone_scan:{date:"2024-01-20",findings:"no skeletal metastases"}},treatment_plan_baseline:{intent:"curative",planned_regimen:"AC-T",start_date:"2024-02-01"},metadata:{data_version:"1.0",entered_by:"Dr. Pagheh",source_doc_id:"path_2024_001",last_reviewed:"2024-02-05"},type:"oncologic",cc:"breast mass",primary_diagnosis:"breast cancer"},{_id:"patient_1762156450782",patient_id:"P-002",file_number:"30032",national_code:"4970111112",disease_characteristics:{primary_site:"colon",stage:{t:"2",n:"1",m:"0"}},pathology:{histology:"carcinoma",grade:"2"},imaging_baseline:{ct_scan:{chest:"0",pelvis:"0",abdomen:"0"}},treatment_plan_baseline:{intent:"curative",planned_regimen:"folfox"},type:"oncologic",cc:"colon cancer"},{patient_id:"P-003",file_number:"40029",national_code:"2020157136",_id:"patient_1762248440350",type:"hematologic",cc:"pancytopenia",treatment_plan_baseline:{intent:"f/u"},lab:{wbc:"3",hb:"10.2",plt:"79",spep:"nl",tsh:"1.9",viral:"0",ast:"nl",alt:"nl",alp:"nl",ldh:"330",ttg:"0",pbs:"reactive"},imaging_baseline:{sonpography:{spleen:"118",liver:"88"}}},{_id:"patient_1762248906604",patient_id:"P-004",file_number:"40030",national_code:"6289208012",type:"hematologic",cc:"papule",lab:{wbc:"2.8",hb:"10.8",plt:"146",viral:"0",ace:"113",fana:"0"},primary_diagnosis:"sarcoidosis"},{_id:"patient_1762249217390",patient_id:"P-005",file_number:"40028",national_code:"2030670091",imaging_baseline:{ct_scan:{chest:"0",pelvis:"0",abdomen:"0",axilla:"1"},bone_scan:{findings:"normal"}},treatment_plan_baseline:{intent:"curative",planned_regimen:"AC"},disease_characteristics:{primary_site:"breast",stage:{t:"2",n:"0"},laterality:"right"},pathology:{ihc:{ER:"positive",PR:"positive",HER2:"0",Ki67:"10"}},type:"oncologic",cc:"breast mass",pmh:{premature_menopause:"1"},primary_diagnosis:"breast cancer"},{_id:"patient_1762249604167",patient_id:"P-006",file_number:"40027",national_code:"4860236378",type:"hematologic",cc:"abortion",lab:{wbc:"12.6",hb:"11.1",plt:"119",tsh:"nl",ferritin:"26",d3:"10"},primary_diagnosis:"anemia",pmh:{Appendectomy:"1","hydatid cyst":"1"}},{_id:"patient_1762249888885",patient_id:"P-007",file_number:"40026",national_code:"6289215159",treatment_plan_baseline:{intent:"curative",planned_regimen:"folfox",plan:{regimen:"folfox",surgery:"1"}},type:"oncologic",cc:"sigmoid cancer",disease_characteristics:{primary_site:"sigmoid",stage:{t:"3",n:"0"}},pathology:{ihc:{mmr:"pmmr"}},pmh:{htn:"1"}},{_id:"patient_1762250125744",patient_id:"P-008",file_number:"40025",national_code:"2030663115",treatment_plan_baseline:{intent:"curative",plan:{regimen:"ferinject"}},type:"hematologic",cc:"menorrhagia",imaging_baseline:{sonpography:{status:"nl"},gastric:{colonoscopy:{status:"nl"},endoscopy:{status:"nl"}}},lab:{wbc:"5.1",hb:"9",plt:"320",ferritin:"4.5",mcv:"71"},primary_diagnosis:"iron deficiency"},{_id:"patient_1762250454777",patient_id:"P-009",file_number:"40024",national_code:"2030109241",treatment_plan_baseline:{intent:"curative",plan:{regimen:"mds"}},type:"hematologic",cc:"anemia",imaging_baseline:{gastric:{colonoscopy:{status:"abnormal",hemorrhoid:"1"}}},lab:{wbc:"6.3",hb:"11.3",plt:"203",tsh:"9.8",ferritin:"219",ttg:"0",spep:"nl",mcv:"92",esr:"56",calprotectin:"182"}},{_id:"patient_1762250746530",patient_id:"P-010",file_number:"40023",national_code:"2560125961",treatment_plan_baseline:{plan:{regimen:"supportive"}},type:"hematologic",cc:"weight loss",imaging_baseline:{sonpography:{status:"nl"}},lab:{wbc:"5.6",hb:"11.8",plt:"199",tsh:"7.9",ferritin:"24",spep:"nl",anti_tpo:"positive",epo:"17"},pmh:{hypothyroidism:"1",Psoriasis:"1"},primary_diagnosis:"anemia"},{_id:"patient_1762250990107",patient_id:"P-011",file_number:"40022",national_code:"2031841343",treatment_plan_baseline:{intent:"curative",plan:{regimen:"TCHP"}},type:"oncologic",cc:"breast mass",imaging_baseline:{bone_scan:{findings:"nl"}},lab:{viral:"0",cea:"3.7","ca15-3":"35"},disease_characteristics:{primary_site:"breast",stage:{t:"2",n:"0"},laterality:"left"},pathology:{ihc:{ER:"70",PR:"negative",HER2:"3+"},histology:"invasive ductal carcinoma",grade:"1"},pmh:{Menopause:"1"},primary_diagnosis:"breast cancer"},{_id:"patient_1762251328826",patient_id:"P-012",file_number:"40021",national_code:"4979785603",treatment_plan_baseline:{intent:"supportive"},type:"hematologic",cc:"thrombocytopenia",imaging_baseline:{sonpography:{spleen:"nl",liver:"nl",prostate:"53mm"}},lab:{wbc:"5.2",hb:"13.1",plt:"131",cr:"1.21",secondory_wu:"nl"},pmh:{htn:"1",dm:"1"},primary_diagnosis:"itp"},{_id:"patient_1762251590760",patient_id:"P-013",file_number:"40020",national_code:"2249124124",type:"hematologic",cc:"Leukocytosis",imaging_baseline:{sonpography:{spleen:"160",liver:"nl",axilla:"lap",inguinal:"lap"}},lab:{wbc:"92",hb:"10.1",plt:"75",spep:"nl",ldh:"402",esr:"21",cr:"1.4",ca:"8.5",pmn:"3",lym:"93",coombs:"negative","b2-micro":"5.5"},pathology:{"bma-b":{cellularity:"95",lymphocyte:"90",dx:"cll"},flowcytometry:{cd20:"positive"}},primary_diagnosis:"cll"},{_id:"patient_1762252237484",patient_id:"P-014",file_number:"40019",national_code:"3611848018",type:"hematologic",cc:"fatigue",treatment_plan_baseline:{intent:"curative",plan:{regimen:"ferinject"}},lab:{wbc:"4.9",hb:"10.1",plt:"253",ferritin:"2.11",mcv:"83"},pmh:{menoraghia:"1"}},{_id:"patient_1762252505866",patient_id:"P-015",file_number:"40018",national_code:"2242731527",type:"oncologic",cc:"mass",pathology:{histology:"nasopharyngeal carcinoma"},primary_diagnosis:"nasopharynx cancer",disease_characteristics:{primary_site:"nasopharynx"}},{_id:"patient_1762252671328",patient_id:"P-016",file_number:"40017",national_code:"5799405986",type:"oncologic",cc:"cough",imaging_baseline:{ct_scan:{chest1:{mass:"50*73",lap:"positive"}},bone_scan:{findings:"nl"},mri:{brain:{status:"nl"}}},lab:{tsh:"1.2",viral:"0"},pathology:{histology:"poor diffrentiaed adenocarcinoma",ihc:{Ki67:"55",ck7:"positive",ck20:"negative","ttf-1":"positive",pdl1:"11",egfr:"positive"}},primary_diagnosis:"NSCLC",pmh:{cardiac:"3vd"},disease_characteristics:{stage:{t:"2a",n:"2"}},sh:{smoker:"positive",addict:"positive"}},{_id:"patient_1762253403646",patient_id:"P-017",file_number:"40016",national_code:"4860296656",type:"hematologic",imaging_baseline:{sonpography:{status:"nl"}},treatment_plan_baseline:{intent:"curative",plan:{regimen:"ferinject"}},lab:{wbc:"6.7",hb:"9.1",plt:"161",ferritin:"21",spep:"nl",mcv:"88",esr:"60",coombs:"negative",b12:"561",hb_e:{a2:"2.1"}},primary_diagnosis:"IDA",pmh:{menoraghia:"0",abortion:"0",Pregnancy:"1"}},{_id:"patient_1762253784801",patient_id:"P-018",file_number:"40016",national_code:"2031810456",type:"hematologic",cc:"anemia",imaging_baseline:{sonpography:{status:"nl"}},treatment_plan_baseline:{intent:"supportive"},lab:{wbc:"9.2",hb:"9",plt:"248",spep:"polyclonal",esr:"101",cr:"5.4",ast:"nl",alt:"nl",alp:"nl",epo:"8.2",ca:"7.9","b2-micro":"25",sife:"polyclonal"},pmh:{htn:"1",dm:"1",cardiac:"cabg",esrd:"1"}},{_id:"patient_1762254154659",patient_id:"P-019",file_number:"40015",national_code:"2030073822",type:"oncologic",cc:"lung mass",pmh:{htn:"1",hypothyroidism:"1",other:"radiotherapy to lung"},primary_diagnosis:"lung cancer",pathology:{histology:"adenoid cystic carcinoma"}},{_id:"patient_1762254443653",patient_id:"P-020",file_number:"40014",national_code:"4889658432",type:"oncologic",cc:"known cancer",imaging_baseline:{mri:{abdomen:{status:"abnormal",findings:"multifocal hcc",lap:"paraaortic"}}},treatment_plan_baseline:{intent:"supportive",plan:{regimen:"sorafenib"}},lab:{wbc:"9.2",hb:"10.1",plt:"176",tsh:"3.31",cr:"1.5",cea:"1.9",inr:"1.1",alb:"3.6","bili-t":"5.6","biti-d":"2.7",afp:"400","ca19-9":"13"}},{_id:"patient_1762254869537",patient_id:"P-021",file_number:"40013",national_code:"4888764816",type:"hematologic",cc:"anemia",lab:{wbc:"8.8",hb:"10.8",plt:"119"},pmh:{htn:"1",abortion:"2"}},{_id:"patient_1762254973462",patient_id:"P-022",file_number:"40012",national_code:"2239636106",type:"hematologic",cc:"leukopenia",lab:{wbc:"3.2",hb:"12.7",plt:"202",mcv:"86",pmn:"62",lym:"35"},pmh:{dm:"1"}},{patient_id:"P-023",file_number:"40011",national_code:"6280081664",_id:"patient_1762255369146",type:"oncologic",cc:"shoulder mass",imaging_baseline:{sonpography:{thyroid:"nodule 5.8*5.9mm"}},treatment_plan_baseline:{intent:"curative",plan:{surgery:"with unknown margin"}},primary_diagnosis:"dfsp",pathology:{histology:"dermatofibrosarcoma protuberans",ihc:{Ki67:"15",cd34:"positive"}}},{_id:"patient_1762255815297",patient_id:"P-024",file_number:"40010",national_code:"2269805496",type:"hematologic",cc:"anemia",lab:{wbc:"3.9",hb:"9.5",plt:"194",spep:"nl",ferritin:"513",mcv:"78",viral:"0",ast:"nl",alt:"nl",alp:"nl",ldh:"448",epo:"2.3",pmn:"58",lym:"40",coombs:"negative",fana:"0",anti_tpo:"92",b12:"1000",hb_e:{a2:"2.5"}},treatment_plan_baseline:{intent:"f/u"},pmh:{menoraghia:"1",abortion:"3",other:"bypass surgery + p.c transfusion"}},{_id:"patient_1762256163351",patient_id:"P-025",file_number:"4009",national_code:"2269087313",type:"hematologic",cc:"anemia",lab:{wbc:"8.4",hb:"9.5",plt:"273",ferritin:"56",tsh:"0.42",mcv:"89",viral:"0",esr:"98",cr:"2.31",ast:"nl",alt:"nl",alp:"nl",epo:"4.3",fana:"67","anti-dsdna":"386"},treatment_plan_baseline:{intent:"f/u",plan:{regimen:"mds+eprex"}},imaging_baseline:{sonpography:{kidney:"moderate hydropephrosis in right kidney"}},pmh:{htn:"1",dm:"1",hypothyroidism:"1",ckd:"1"}},{_id:"patient_1762256486259",patient_id:"P-026",file_number:"4008",national_code:"4889719350",type:"hematologic",cc:"bicytopenia",lab:{wbc:"2.5",hb:"10.8",plt:"196",ferritin:"73",spep:"nl",tsh:"3",mcv:"80",fana:"0",pmn:"55",lym:"43","2me":"0",wright:"1/120"},treatment_plan_baseline:{intent:"f/u",plan:{regimen:"mds"}},imaging_baseline:{sonpography:{status:"abnormal",spleen:"98mm",liver:"grade 2 fatty liver"}},pmh:{asthma:"1"},primary_diagnosis:"mds",pathology:{"bma-b":{cellularity:"60",dx:"mds",fe:"1/5","m/e":"0.7",mega:"nl"}}},{_id:"patient_1762256974895",patient_id:"P-027",file_number:"4007",national_code:"4869489988",type:"oncologic",cc:"known rectal cancer",treatment_plan_baseline:{intent:"curative",plan:{regimen:"xelox",radiotherapy:"1"}},imaging_baseline:{ct_scan:{abdomen:"distal sigomid + rectum",findings:"distal sigomid + rectum"}},primary_diagnosis:"rectal cancer",pathology:{histology:"adenocarcinoma"},disease_characteristics:{primary_site:"rectum",stage:{t:"3",n:"2"}},sh:{addict:"1"}},{_id:"patient_1762257302405",patient_id:"P-028",file_number:"4006",national_code:"4880142514",type:"oncologic",cc:"hpv positive",treatment_plan_baseline:{intent:"curative",plan:{surgery:"recommended"}},primary_diagnosis:"HSIL",pathology:{grade:"cin1/2"}},{_id:"patient_1762257589968",patient_id:"P-029",file_number:"4005",national_code:"2269573609",type:"hematologic",cc:"anemia",treatment_plan_baseline:{intent:"curative",plan:{regimen:"mds+iron"}},lab:{wbc:"5.4",hb:"11.4",plt:"236",ferritin:"41",spep:"nl",tsh:"2",mcv:"83",esr:"4",cr:"0.61",coombs:"negative",b12:"1000"},imaging_baseline:{sonpography:{status:"nl",spleen:"nl",liver:"nl"}},pmh:{htn:"1",dm:"1"}},{_id:"patient_1762257812541",patient_id:"P-030",file_number:"4004",national_code:"2239638540",type:"hematologic",cc:"consultation",pmh:{aki:"atn"}},{_id:"patient_1762257933318",patient_id:"P-031",file_number:"4003",national_code:"4879317810",type:"oncologic",cc:"known gastric cancer",treatment_plan_baseline:{intent:"supportive",plan:{regimen:"palliative care"}},imaging_baseline:{ct_scan:{abdomen:"gastric mass + hepatic mets >65mm mass",chest:"pulmonary mets"}}},{_id:"patient_1762258110941",patient_id:"P-032",file_number:"4002",national_code:"2031857487",type:"oncologic",cc:"bicytopenia",lab:{wbc:"2.5",hb:"11.5",plt:"159",ferritin:"46",spep:"gamma peak",mcv:"70",pmn:"40",lym:"57",hb_e:{a2:"3.4"}}},{_id:"patient_1762258770703",patient_id:"P-033",file_number:"4001",national_code:"2031666002",type:"hematologic",cc:"anemia",treatment_plan_baseline:{intent:"curative",plan:{regimen:"iron",other:"gastroenterologist consultation recommended"}},lab:{wbc:"35",hb:"9.1",plt:"150",ferritin:"140",spep:"nl",mcv:"83",tsh:"2.5",viral:"0",esr:"15",ast:"30",alt:"21",coombs:"negative",hb_e:{a2:"2.2"},d3:"18",calprotectin:"398",fe:"70"},imaging_baseline:{sonpography:{status:"nl"}}},{_id:"patient_1762259198951",patient_id:"P-034",file_number:"40060",national_code:"2121724559",type:"hematologic",cc:"anemia",treatment_plan_baseline:{intent:"f/u"},lab:{wbc:"4.9",hb:"7.8",plt:"212",ferritin:"7.9",viral:"0"},pmh:{other:"sleeve surgery"},primary_diagnosis:"anemia"},{_id:"patient_1762259367666",patient_id:"P-035",file_number:"40059",national_code:"2180469683",type:"oncologic",cc:"dr amiriani refer",treatment_plan_baseline:{intent:"supportive",plan:{regimen:"capecitabine"}},lab:{tsh:"4.8",cr:"0.76",ast:"nl",alt:"nl",alp:"nl",cea:"2.4","ca19-9":"24"},imaging_baseline:{ct_scan:{chest1:{status:"nl"},abdomen:{status:"abnormall",lap:"0",mass:"1"}}},pmh:{htn:"1"},primary_diagnosis:"gastric cancer",pathology:{histology:"adenocarcinoma",ihc:{HER2:"0",pdl1:"0",mlh1:"0",pms2:"0"}}},{_id:"patient_1762260002380",patient_id:"P-036",file_number:"40058",national_code:"4979433553",type:"oncologic",cc:"dr yolme refer",treatment_plan_baseline:{intent:"supportive",plan:{radiotherapy:"palliative",other:"savari dilation"}},imaging_baseline:{gastric:{endoscopy:{status:"abnormal",finding:"esophageal mass / Failure to pass the scope"}}},primary_diagnosis:"esophageal cancer",pathology:{histology:"poorly differentiated carcinoma"}},{_id:"patient_1762260269072",patient_id:"P-037",file_number:"40057",national_code:"2031494392",type:"hematologic",cc:"polycythemia",lab:{wbc:"9.1",hb:"18.1",plt:"143",ferritin:"23",mcv:"86",epo:"35",ca:"11.2",psa:"nl"},imaging_baseline:{sonpography:{status:"nl",spleen:"104mm",liver:"126mm"},ct_scan:{chest1:{status:"nl"}}},pmh:{htn:"1",dm:"1",bph:"1"}},{_id:"patient_1762260755655",patient_id:"P-038",file_number:"40056",national_code:"2121552197",type:"hematologic",cc:"alopecia areta",primary_diagnosis:"alopecia areta"},{patient_id:"P-039",file_number:"40055",national_code:"0",_id:"patient_1762260823608",type:"oncologic",cc:"known gastric cancer",treatment_plan_baseline:{intent:"curative",plan:{regimen:"folfox"}},primary_diagnosis:"gastric cancer",imaging_baseline:{ct_scan:{findings:"nl?"},gastric:{eus:{status:"abnormal",finding:"gastric lesser curvature mass"}}},pmh:{htn:"1"},pathology:{histology:"moderate diffrentiated adenocarcinoma"},disease_characteristics:{primary_site:"gastric",stage:{t:"3",n:"1"}},fh:{gastric:"brother"}},{_id:"patient_1762261213434",patient_id:"P-040",file_number:"40054",national_code:"6358923641",type:"oncologic",cc:"relapse of known tcc",treatment_plan_baseline:{intent:"curative",plan:{regimen:"pembrolizumab",surgery:"previously done",other:"previously gem+cis"}},lab:{wbc:"3.6",hb:"11.9",plt:"215"},primary_diagnosis:"relapsed mets tcc"},{_id:"patient_1762261510697",patient_id:"P-041",file_number:"40053",national_code:"2030988847",type:"oncologic",cc:"hapatic mass (mets)",treatment_plan_baseline:{intent:"curative"},lab:{cea:"29","ca19-9":"133"},imaging_baseline:{ct_scan:{chest1:{status:"abnormal",mass:"60mm right",lap:"Mediastinum"},abdomen:{status:"abnormal",mass:"multiple hepatic mass"}},gastric:{colonoscopy:{status:"nl",findings:"colon is suspected"},endoscopy:{status:"nl"}}},pmh:{htn:"1"},primary_diagnosis:"mets colon cancer"},{_id:"patient_1762261940280",patient_id:"P-042",file_number:"40052",national_code:"2031052276",type:"oncologic",cc:"breast mass",treatment_plan_baseline:{intent:"curative",plan:{regimen:"AC-taxol weekly-let"}},lab:{cea:"7.8","ca15-3":"27.2"},primary_diagnosis:"breast cancer",pathology:{histology:"invasive ductal carcinoma",ihc:{HER2:"0",Ki67:"30",ER:"90",PR:"80"}},disease_characteristics:{primary_site:"breast",stage:{t:"2",n:"2"},laterality:"left"}},{_id:"patient_1762262470215",patient_id:"P-043",file_number:"40051",national_code:"2020910365",type:"hematologic",cc:"anemia",treatment_plan_baseline:{intent:"curative",plan:{regimen:"iron"}},lab:{wbc:"7.8",hb:"6.3",plt:"399",mcv:"77",mch:"21"},imaging_baseline:{sonpography:{status:"nl"}},pmh:{menoraghia:"1"},primary_diagnosis:"IDA"},{_id:"patient_1762262660129",patient_id:"P-044",file_number:"40050",national_code:"2031275518",type:"hematologic",cc:"loc + seizure",treatment_plan_baseline:{intent:"f/u"},lab:{esr:"120",ast:"34",alt:"44",alp:"1870",ca:"15",d3:"24",sife:"polyclonal",afp:"0","2me":"0",wright:"0",psa:"3.2",pth:"180",gamma:"24"},imaging_baseline:{ct_scan:{findings:"nl w/o contrast"},gastric:{colonoscopy:{status:"nl"},endoscopy:{status:"abnormal",finding:"gastritis"}}},primary_diagnosis:"hypercalcemia"},{_id:"patient_1762263073417",patient_id:"P-045",file_number:"40049",national_code:"5799401557",type:"oncologic",cc:"bicytopenia",treatment_plan_baseline:{intent:"curative",plan:{regimen:"VRD 10"}},lab:{wbc:"3.6",hb:"10.1",plt:"194",spep:"gamma peak",tsh:"2.6",esr:"85",cr:"0.94",ca:"8.4",sife:"igG/k",gamma:"42","kappa/lamda":"1233/35",beta2micro:"3.6",uife:"4950",hba1c:"8.5"},primary_diagnosis:"MM",pmh:{htn:"1",dm:"1"},pathology:{histology:"MM","bma-b":{cellularity:"42.5",dx:"MM","plasma-cell":"35"}}},{_id:"patient_1762263608361",patient_id:"P-046",file_number:"40048",national_code:"4880148164",type:"hematologic",cc:"anemia",treatment_plan_baseline:{intent:"curative",plan:{regimen:"iron"}},lab:{wbc:"9.5",hb:"8.7",plt:"269",ferritin:"30",mcv:"73",cr:".79",ca:"8.1",fe:"24"},primary_diagnosis:"IDA",pmh:{menoraghia:"1"}},{_id:"patient_1762263820077",patient_id:"P-047",file_number:"40047",national_code:"4869081768",type:"hematologic",cc:"limb pain",treatment_plan_baseline:{plan:{other:"treat underlying disease"}},lab:{wbc:"9.3",hb:"12.6",plt:"238",mcv:"68",spep:"nl",cr:"1",mch:"20",hba1c:"11.3",fbs:"295"},imaging_baseline:{sonpography:{status:"nl",liver:"grade 1 fatty liver"}}},{_id:"patient_1762264090408",patient_id:"P-048",file_number:"40046",national_code:"4889660593",type:"hematologic",cc:"bone pain",lab:{wbc:"9.2",hb:"13",plt:"218",mcv:"79",mch:"26"},primary_diagnosis:"anemia"},{patient_id:"P-049",file_number:"40045",national_code:"2112441906",_id:"patient_1762264186031",type:"oncologic",cc:"lap neck",treatment_plan_baseline:{intent:"f/u",plan:{regimen:"iron"}},lab:{wbc:"5.2",hb:"11",plt:"248",ferritin:"nl",spep:"nl",esr:"18",ast:"nl",alt:"nl",alp:"nl",fana:"0",ldh:"424",ttg:"0"},imaging_baseline:{sonpography:{status:"abnormal",neck:{status:"abnormal",finding:"multiple reactive lap"}}}},{_id:"patient_1762264556988",patient_id:"P-050",file_number:"40044",national_code:"2239795859",type:"hematologic",cc:"headache",treatment_plan_baseline:{intent:"curative"},lab:{wbc:"4.4",hb:"12.3",plt:"177",ferritin:"22",esr:"9",cr:"0.77",viral:"0",ast:"33",alt:"31",alp:"177",epo:"4.3",pmn:"41",lym:"52",ttg:"0",anti_tpo:"0","2me":"0"},imaging_baseline:{sonpography:{status:"nl",breast:{birads:"2"},pelvis:{status:"nl",finding:"myoma 40mm"}},graphy:{mamography:{birads:"0"}}},primary_diagnosis:"anemia"}];
+
+        function isAbnormal(key, value) {
+            const numVal = parseFloat(value);
+            if (isNaN(numVal)) return false;
+
+            // Normal ranges for common labs
+            const ranges = {
+                wbc: { min: 4.5, max: 11 },
+                hb: { min: 12, max: 16 },
+                plt: { min: 150, max: 400 },
+                ferritin: { min: 30, max: 300 },
+                mcv: { min: 80, max: 100 }
+            };
+
+            const range = ranges[key.toLowerCase()];
+            if (!range) return false;
+            return numVal < range.min || numVal > range.max;
+        }
+
+        function extractLabBadges(lab) {
+            if (!lab) return [];
+            const criticalLabs = ['wbc', 'hb', 'plt', 'ferritin'];
+            return criticalLabs
+                .filter(k => lab[k])
+                .map(k => ({
+                    key: k,
+                    value: lab[k],
+                    isAbnormal: isAbnormal(k, lab[k])
+                }));
+        }
+
+        function extractStage(disease) {
+            if (!disease || !disease.stage) return null;
+            const stage = disease.stage;
+            const parts = [];
+            if (stage.t) parts.push(`T${stage.t}`);
+            if (stage.n) parts.push(`N${stage.n}`);
+            if (stage.m) parts.push(`M${stage.m}`);
+            return parts.join(' ');
+        }
+
+        function extractIHC(pathology) {
+            if (!pathology || !pathology.ihc) return [];
+            const ihc = pathology.ihc;
+            const markers = ['ER', 'PR', 'HER2', 'Ki67'];
+            return markers
+                .filter(m => ihc[m] !== undefined && ihc[m] !== null)
+                .slice(0, 2)
+                .map(m => `${m}:${ihc[m]}`);
+        }
+
+        function formatValue(val) {
+            if (val === null || val === undefined) return '—';
+            if (typeof val === 'object') return '[Object]';
+            return String(val);
+        }
+
+        function renderDataCard(key, value, patient) {
+            const card = document.createElement('div');
+            card.className = 'data-card';
+
+            const title = document.createElement('div');
+            title.className = 'card-title';
+            title.textContent = key.replace(/_/g, ' ');
+            card.appendChild(title);
+
+            const content = document.createElement('div');
+            content.className = 'card-content';
+
+            if (typeof value === 'object' && value !== null) {
+                // Nested object - show first 2 levels
+                Object.entries(value).forEach(([k, v]) => {
+                    if (typeof v === 'object' && v !== null) {
+                        // Level 2 nested
+                        const nested = document.createElement('div');
+                        nested.className = 'card-nested';
+                        
+                        const nestedTitle = document.createElement('div');
+                        nestedTitle.className = 'card-nested-title';
+                        nestedTitle.textContent = k.replace(/_/g, ' ');
+                        nested.appendChild(nestedTitle);
+
+                        Object.entries(v).forEach(([k2, v2]) => {
+                            const item = document.createElement('div');
+                            item.className = 'card-item';
+                            
+                            const label = document.createElement('span');
+                            label.className = 'card-label';
+                            label.textContent = k2.toUpperCase();
+                            
+                            const val = document.createElement('span');
+                            val.className = 'card-value';
+                            if (isAbnormal(k2, v2)) val.classList.add('abnormal');
+                            val.textContent = formatValue(v2);
+                            
+                            item.appendChild(label);
+                            item.appendChild(val);
+                            nested.appendChild(item);
+                        });
+
+                        content.appendChild(nested);
+                    } else {
+                        const item = document.createElement('div');
+                        item.className = 'card-item';
+                        
+                        const label = document.createElement('span');
+                        label.className = 'card-label';
+                        label.textContent = k.toUpperCase();
+                        
+                        const val = document.createElement('span');
+                        val.className = 'card-value';
+                        if (isAbnormal(k, v)) val.classList.add('abnormal');
+                        val.textContent = formatValue(v);
+                        
+                        item.appendChild(label);
+                        item.appendChild(val);
+                        content.appendChild(item);
+                    }
+                });
+            } else {
+                const item = document.createElement('div');
+                item.className = 'card-item';
+                
+                const label = document.createElement('span');
+                label.className = 'card-label';
+                label.textContent = 'Value';
+                
+                const val = document.createElement('span');
+                val.className = 'card-value';
+                val.textContent = formatValue(value);
+                
+                item.appendChild(label);
+                item.appendChild(val);
+                content.appendChild(item);
+            }
+
+            card.appendChild(content);
+            return card;
+        }
+
+        function renderExpandedContent(patient) {
+            const expanded = document.createElement('div');
+            expanded.className = 'expanded-content';
+
+            const grid = document.createElement('div');
+            grid.className = 'cards-grid';
+
+            // Get all top-level keys except ID fields
+            const excludeKeys = ['_id', 'patient_id', 'file_number', 'national_code'];
+            
+            Object.entries(patient).forEach(([key, value]) => {
+                if (!excludeKeys.includes(key)) {
+                    grid.appendChild(renderDataCard(key, value, patient));
+                }
+            });
+
+            expanded.appendChild(grid);
+            return expanded;
+        }
+
+        function renderPatientHeader(patient) {
+            const wrapper = document.createElement('div');
+            wrapper.className = 'patient-wrapper';
+
+            const row = document.createElement('div');
+            row.className = 'header-row';
+
+            // Patient ID Badge
+            const idBadge = document.createElement('div');
+            idBadge.className = 'patient-id-badge';
+            idBadge.textContent = patient.patient_id;
+
+            // Patient Info
+            const info = document.createElement('div');
+            info.className = 'patient-info';
+
+            const name = document.createElement('span');
+            name.className = 'patient-name';
+            name.textContent = patient.primary_diagnosis || patient.cc || 'Patient';
+
+            info.appendChild(name);
+
+            // Type Badge
+            const typeBadge = document.createElement('div');
+            typeBadge.className = `badge badge-type-${patient.type}`;
+            typeBadge.textContent = patient.type === 'oncologic' ? '🔴 Onco' : '🟠 Hema';
+            info.appendChild(typeBadge);
+
+            // Quick Metrics Container
+            const metricsContainer = document.createElement('div');
+            metricsContainer.className = 'quick-metrics';
+
+            if (patient.type === 'oncologic') {
+                // Stage
+                const stage = extractStage(patient.disease_characteristics);
+                if (stage) {
+                    const stageBadge = document.createElement('div');
+                    stageBadge.className = 'badge stage-badge';
+                    stageBadge.textContent = stage;
+                    metricsContainer.appendChild(stageBadge);
+                }
+
+                // IHC Markers
+                const ihcMarkers = extractIHC(patient.pathology);
+                ihcMarkers.forEach(marker => {
+                    const badge = document.createElement('div');
+                    badge.className = 'badge badge-primary-diagnosis';
+                    badge.textContent = marker;
+                    metricsContainer.appendChild(badge);
+                });
+            } else if (patient.type === 'hematologic') {
+                // Lab values
+                const labBadges = extractLabBadges(patient.lab);
+                labBadges.forEach(lab => {
+                    const badge = document.createElement('div');
+                    badge.className = lab.isAbnormal ? 'badge badge-lab-alert' : 'badge badge-lab-normal';
+                    badge.title = `${lab.key}: ${lab.value}`;
+                    badge.textContent = `${lab.key.toUpperCase()}: ${lab.value}`;
+                    metricsContainer.appendChild(badge);
+                });
+            }
+
+            info.appendChild(metricsContainer);
+
+            // Expand button
+            const expandBtn = document.createElement('button');
+            expandBtn.className = 'expand-btn';
+            expandBtn.textContent = '→';
+
+            const expandedContent = renderExpandedContent(patient);
+
+            expandBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                expandBtn.classList.toggle('open');
+                expandedContent.classList.toggle('show');
+                console.log('Expand clicked, show class:', expandedContent.classList.contains('show'));
+            });
+
+            row.appendChild(idBadge);
+            row.appendChild(info);
+            row.appendChild(expandBtn);
+
+            wrapper.appendChild(row);
+            wrapper.appendChild(expandedContent);
+
+            return wrapper;
+        }
+
+        function init() {
+            const list = document.getElementById('patientsList');
+            patients.forEach(patient => {
+                list.appendChild(renderPatientHeader(patient));
+            });
+        }
+
+        document.addEventListener('DOMContentLoaded', init);
+    </script>
+</body>
+</html>
