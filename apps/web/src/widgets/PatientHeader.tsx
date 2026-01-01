@@ -30,14 +30,14 @@ export function PatientHeader() {
     };
   };
 
-  const disease = patient?.diseaseCharacteristics;
+  const disease = patient?.disease_characteristics;
   const pathology = patient?.pathology;
-  const treatment = patient?.treatmentPlan;
+  const treatment = patient?.treatment_plan_baseline;
   const tnm = extractStage(disease);
   const ihc = extractIHC(pathology);
 
-  const patientId = patient?.id || "P-001";
-  const diagnosis = disease?.primaryDiagnosis || "Diagnosis";
+  const patientId = patient?.patient_id || "P-001";
+  const diagnosis = patient?.primary_diagnosis || "Diagnosis";
   const prStatus =
     ihc.pr?.toLowerCase() === "positive" ? "positive" : "negative";
   const erStatus =
@@ -226,7 +226,7 @@ export function PatientHeader() {
                       <Badge text={ihc.her2 || "N/A"} variant="negative" />
                     }
                   />
-                  <DataRow label="Ki-67" value={pathology.ki67 || "N/A"} />
+                  <DataRow label="Ki-67" value={pathology.ihc.Ki67 || "N/A"} />
                 </Card>
               )}
 
@@ -239,15 +239,11 @@ export function PatientHeader() {
                   />
                   <DataRow
                     label="Start Date"
-                    value={treatment.startDate || "N/A"}
+                    value={treatment.start_date || "N/A"}
                   />
                   <DataRow
-                    label="Modality"
-                    value={treatment.modality || "N/A"}
-                  />
-                  <DataRow
-                    label="Protocol"
-                    value={treatment.protocol || "N/A"}
+                    label="Regimen"
+                    value={treatment.planned_regimen || "N/A"}
                   />
                 </Card>
               )}
